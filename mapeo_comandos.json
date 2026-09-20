@@ -1,0 +1,84 @@
+{
+  "hora": [
+    "^(qué hora es|dime la hora|tienes la hora|hora)$"
+  ],
+  "fecha": [
+    "^(qué día es hoy|dime la fecha|fecha|a cuántos estamos)$"
+  ],
+  "notepad": [
+    "^(abre el bloc de notas|abrir bloc de notasnotas|abrir el bloc de notas|abre el blog de notas|abrir el blog de notas|abre el notepad|notepad)$"
+  ],
+  "volumen_mutear": [
+    "^(silencio|mutear|quita el sonido|mutea el audio|silencia el audio|silencia el sonido)$"
+  ],
+  "volumen_subir": [
+    "^(sube el volumen|subir volumen|más volumen|ponlo más alto)$"
+  ],
+  "volumen_bajar": [
+    "^(baja el volumen|bajar volumen|menos volumen|ponlo más bajo)$"
+  ],
+  "volumen_desmutear": [
+    "^(desmutear|activa el sonido|pon sonido|quita el silencio)$"
+  ],
+  "alarma": [
+    "^(?:pon(?:e|me|er)?(?: (?:una?|la))? alarm[ae]?|crea(?:r)?(?: (?:una?|la))? alarm[ae]?|programa(?:r)?(?: (?:una?|la))? alarm[ae]?|a[nñ]ade(?:r)?(?: (?:una?|la))? alarm[ae]?|alarm[ae]?)(?:\\s+(.+))?$"
+  ],
+  "buscar_google": [
+    "^(?:busca(?:n|r)?(?: en)? google|busca(?:n|r)?(?: en)? gugel|google(?:a|ar)?)\\s+(.+)$"
+  ],
+  "preguntar_ia": [
+    "^(?:pregunta(?:le)?(?:\\s+(?:a(?:\\s+la)?|al))?(?:\\s+(?:ia|i a|laia|inteligencia(?: artificial)?|modelo|ooba|webui))|consulta(?:le)?(?:\\s+(?:a(?:\\s+la)?|al))?(?:\\s+(?:ia|i a|laia|modelo))|dile(?:\\s+a)?(?:\\s+la)?(?:\\s+(?:ia|i a|laia|inteligencia(?: artificial)?|modelo)))\\s+(.+)$",
+    "^(?:ia|i a|laia|ooba)\\s+(.+)$",
+    "^(?:olvida(?:r)?(?: la)? conversaci[oó]n|nueva conversaci[oó]n)$"
+  ],
+  "conversacion": [
+    "^(?:inicia(?:r)?|empieza(?:r)?|abre(?:r)?)(?:\\s+(?:una|la))?\\s+conversaci[oó]n$",
+    "^(?:modo\\s+)?conversaci[oó]n$",
+    "^(?:fin|termina(?:r)?|acaba(?:r)?|cierra(?:r)?|salir)\\s+(?:de\\s+)?(?:la\\s+)?conversaci[oó]n$"
+  ],
+  "captura": [
+    "^(haz(?:me)?(?: una)? captura(?: de pantalla)?|toma(?:r)?(?: una)? captura(?: de pantalla)?|captura(?: de pantalla)?|screenshot)$"
+  ],
+  "bloquear_pc": [
+    "^(bloquea(?:r)?(?: el)?(?: pc|ordenador|equipo|sesión|sesion)?|lock(?: pc)?)$"
+  ],
+  "apagar_pc": [
+    "^(?:apaga(?:r)?(?: el)?(?: pc|ordenador|equipo)|apaga(?:r)?(?: la)? computadora|shut\\s*down)(?:\\s+(.+))?$"
+  ],
+  "cancelar_apagado": [
+    "^(?:cancela(?:r)?|anula(?:r)?|para(?:r)?)(?: el)?(?: apagado|reinicio|shutdown)$",
+    "^(?:shutdown\\s*/a|abort(?:ar)?(?: el)?(?: apagado|reinicio)?)$"
+  ],
+  "reiniciar_pc": [
+    "^(?:reinicia(?:r)?(?: el)?(?: pc|ordenador|equipo)|reboot(?:ea(?:r)?)?)(?:\\s+(.+))?$"
+  ],
+  "nota": [
+    "^(?:anota|apunta|toma(?:r)?\\s+nota(?:\\s+de)?|nota)\\s+(.+)$",
+    "^(?:escribe(?:\\s+una)?\\s+nota)\\s+(.+)$"
+  ],
+  "modo": [
+    "^modo\\s+(\\S+)$",
+    "^activa(?:r)?\\s+(?:el\\s+|la\\s+)?(?:modo|model|moro)\\s+(\\S+)$",
+    "^pasa(?:r)?\\s+a\\s+(?:el\\s+|la\\s+)?(?:modo|model|moro)\\s+(\\S+)$",
+    "^activa(?:r)?\\s+la\\s+melod[ií]a$"
+  ],
+  "abrir_carpeta": [
+    "^(?:abre|abrir)(?:\\s+la)?\\s+carpeta\\s+(.+)$"
+  ],
+  "abrir_app": [
+    "^(?:abre|abrir)(?:\\s+(?:el|la|los|las))?\\s+(?!carpeta\\b)(.+)$",
+    "^(?:abre|abrir)(?:\\s+(?:la\\s+)?)?(?:app|aplicaci[oó]n|programa)\\s+(.+)$",
+    "^(?:lanza|ejecuta)\\s+(.+)$"
+  ],
+  "estado": [
+    "^estado\\s+(.+)$",
+    "^(?:dime|di|cual es|cuál es)\\s+(?:el\\s+|la\\s+)?estado\\s+(?:de\\s+|del\\s+)?(.+)$",
+    "^(?:qué|que)\\s+tiempo\\s+hace(?:\\s+hoy)?$",
+    "^(?:cómo|como)\\s+está\\s+el\\s+tiempo$",
+    "^(?:cómo|como)\\s+esta\\s+el\\s+tiempo$",
+    "^(?:dime|di)\\s+(?:el\\s+)?tiempo$",
+    "^(?:qué|que)\\s+alarmas?\\s+(?:hay|tengo|programadas?)$",
+    "^(?:dime|di)\\s+(?:las\\s+|mis\\s+)?alarmas(?:\\s+programadas)?$",
+    "^alarmas\\s+programadas$"
+  ]
+}

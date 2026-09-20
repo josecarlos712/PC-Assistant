@@ -1,0 +1,66 @@
+======================================================================
+INFORME DE TRANSFERENCIA DE CONTEXTO - PROYECTO: ASISTENTE VIRTUAL LOCAL
+======================================================================
+
+Estimado modelo de IA:
+Estás recibiendo el contexto de un proyecto en desarrollo. El usuario está construyendo un Asistente Virtual de código abierto para ejecución local en Windows bajo un entorno virtual de Python (.venv). 
+
+Actualmente, el MÓDULO 1 (TTS) y el MÓDULO 2 (Orquestador de Comandos) están COMPLETAMENTE TERMINADOS, testeados con éxito y son 100% FUNCIONALES. Debes tratar ambos módulos como una "CAJA NEGRA" robusta a la que NO se le debe modificar el código core, pero cuya infraestructura y API física debes conocer para integrarle el siguiente bloque: MÓDULO 3 (STT - Speech-to-Text).
+
+----------------------------------------------------------------------
+1. RESUMEN DEL MÓDULO 1: TEXT-TO-SPEECH (TTS) - [CAJA NEGRA]
+----------------------------------------------------------------------
+Ubicación física: 'read_file.py' (en la raíz del proyecto).
+Mecanismo de activación: Físico. Para que el asistente hable, se debe escribir el texto plano en el archivo 'input_tts.txt' y posteriormente ejecutar el script 'read_file.py' utilizando el intérprete de Python del entorno virtual activo.
+
+Características clave de su arquitectura interna:
+- Motor de Voz: Piper TTS ejecutándose localmente a través de subprocesos con el ejecutable nativo (piper.exe) y cargando la voz en español 'es_ES-davefx-medium.onnx'.
+- Gestión de Audio: Utiliza 'pygame.mixer' en un patrón Productor-Consumidor multi-hilo (threading/queue) para pre-cargar y reproducir los audios de manera fluida sin bloquear el sistema.
+- Optimización: Normalización de texto y caché inteligente con Hash MD5 para no regenerar frases idénticas, gestionada por un Garbage Collector dinámico.
+
+----------------------------------------------------------------------
+2. RESUMEN DEL MÓDULO 2: ORQUESTADOR DE COMANDOS LOCALES - [CAJA NEGRA]
+----------------------------------------------------------------------
+Ubicación física principal: 'orquestador.py', 'main.py' y 'mapeo_comandos.json' (en la raíz del proyecto).
+Carpeta de plugins: 'comandos/' (contiene archivos individuales .py para cada acción).
+
+Características clave de su arquitectura interna:
+- Sin LLM (Ligero y Rápido): No utiliza modelos de lenguaje pesados. Utiliza expresiones regulares (RegEx) para emparejar lo que el usuario escribe con intenciones del sistema en microsegundos.
+- Mapeo Dinámico (JSON): El archivo 'mapeo_comandos.json' funciona como un diccionario que asocia los patrones RegEx de activación con el nombre del script encargado de resolverlo.
+- Carga en Caliente (Dynamic Import): 'orquestador.py' lee el JSON, busca la coincidencia, e importa dinámicamente en tiempo de ejecución el script de la carpeta 'comandos/' invocando su función 'ejecutar(match)'.
+- Idempotencia: Los comandos críticos (como el volumen) son idempotentes (fuerzan estados fijos usando internamente la herramienta nativa 'nircmd.exe' en la raíz).
+
+Estructura de archivos actual del Módulo 2:
+- comandos/hora.py             -> Retorna la hora formateada de forma natural.
+- comandos/fecha.py            -> Retorna el día de la semana y mes en español neutro.
+- comandos/notepad.py          -> Lanza de manera asíncrona el Bloc de Notas.
+- comandos/volumen_mutear.py   -> Fuerza silencio absoluto (Mute ON via NirCmd).
+- comandos/volumen_desmutear.py-> Fuerza sonido absoluto (Mute OFF via NirCmd).
+- comandos/volumen_subir.py    -> Eleva el volumen maestro un 4% de forma absoluta.
+- comandos/volumen_bajar.py    -> Reduce el volumen maestro un 4% de forma absoluta.
+
+----------------------------------------------------------------------
+3. CÓMO INTERACTÚAN EL MÓDULO 1 Y EL MÓDULO 2 (EL FLUJO ACTUAL)
+----------------------------------------------------------------------
+Actualmente, el punto de entrada es 'main.py', el cual ejecuta un bucle continuo de consola solicitando entrada al usuario vía 'input()'.
+
+El pipeline actual funciona de la siguiente manera:
+[Consola (Input Texto)] ──► [orquestador.py] ──► [Carga script en comandos/] 
+                                                           │
+ [Bucle principal main.py] ◄── [Ejecuta read_file.py] ◄── [Escribe input_tts.txt]
+
+El script ejecutado dentro de la carpeta 'comandos/' realiza la acción en Windows y devuelve un 'string' de confirmación. El orquestador toma ese string, lo escribe en 'input_tts.txt' e invoca mediante un subproceso ('subprocess.run') a 'read_file.py' asegurando heredar el entorno virtual mediante 'sys.executable'. Tras hablar, el bucle de 'main.py' se libera para otra orden.
+
+----------------------------------------------------------------------
+4. OBJETIVO PARA EL NUEVO MODELO DE IA: MÓDULO 3 (STT)
+----------------------------------------------------------------------
+Tu tarea es guiar al usuario en el desarrollo del MÓDULO 3: SPEECH-TO-TEXT (STT) local, ligero y eficiente para sustituir el teclado ('input()') de 'main.py' por la voz del usuario.
+
+Directrices estrictas para el desarrollo del Módulo 3:
+1. TRATAR LOS MÓDULOS 1 Y 2 COMO CAJAS NEGRAS: No debes proponer modificaciones en la lógica interna de 'read_file.py' ni de 'orquestador.py'. El sistema ya funciona a la perfección.
+2. INTERFAZ DE ENTRADA: El objetivo final del STT es capturar el audio del micrófono del usuario en tiempo real, transcribirlo localmente a texto y pasarle ese string resultante a la función 'evaluar_comando(texto_usuario)' del orquestador.
+3. FILOSOFÍA LOCAL Y ULTRA-RÁPIDA: Al igual que en los módulos anteriores, buscamos una solución local que consuma poquísimos recursos en reposo y responda de forma inmediata (evaluar opciones eficientes como Faster-Whisper, Vosk u otras librerías nativas/ligeras que no requieran GPUs masivas ni llamadas a APIs externas de pago).
+4. MODULARIDAD: El código del STT debe ser aislado para que pueda acoplarse limpiamente al 'main.py' sustituyendo o complementando el mecanismo de entrada actual.
+
+Dando por sentado que entiendes este contexto y la arquitectura de cajas negras, preséntate al usuario y proponle las mejores alternativas locales para el Módulo 3 (STT) que cumplan con estos requisitos de bajo consumo y alta velocidad.
+======================================================================

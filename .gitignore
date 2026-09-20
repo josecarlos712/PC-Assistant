@@ -1,0 +1,14 @@
+venv/
+__pycache__/
+*.pyc
+.idea/
+config_local.json
+cache_tts/
+cache_registro.json
+output_tts/
+capturas/
+alarmas/
+input_tts.txt
+temp_frase.txt
+*.wav
+*.onnx

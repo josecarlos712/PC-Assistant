@@ -1,0 +1,11 @@
+# Asistente virtual local — dependencias directas
+# Instalar con:  pip install -r requirements.txt
+
+# STT (reconocimiento de voz)
+faster-whisper==1.2.1
+sounddevice==0.5.5
+numpy==2.2.6
+
+# TTS (síntesis y reproducción)
+piper-tts==1.4.2
+pygame==2.6.1

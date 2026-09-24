@@ -264,7 +264,7 @@ Los patrones van en minúsculas, de arriba abajo; gana la primera coincidencia.
 Para **modos** o **estados** nuevos, registra la función en `comandos/modo.py` o `comandos/estado.py`.
 
 ## Estructura
-
+<details>
 ```
 .
 ├── main.py                 # Entrada (voz); flags DEV / VERVOSE
@@ -299,6 +299,7 @@ Para **modos** o **estados** nuevos, registra la función en `comandos/modo.py` 
 │   └── input_tts.txt
 └── voices/Dave/            # Piper (.json en git; .onnx a descargar)
 ```
+</details>
 
 ## Palabra de activación y micrófono
 

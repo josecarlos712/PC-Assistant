@@ -54,7 +54,11 @@ $img.Dispose()
 
 
 def _captura_nircmd(ruta_png: str) -> bool:
-    nircmd = os.path.join(os.getcwd(), "nircmd.exe")
+    try:
+        import rutas
+        nircmd = str(rutas.NIRCMD)
+    except ImportError:
+        nircmd = os.path.join(os.getcwd(), "nircmd.exe")
     if not os.path.isfile(nircmd):
         return False
     try:
@@ -65,7 +69,11 @@ def _captura_nircmd(ruta_png: str) -> bool:
 
 
 def ejecutar(match):
-    carpeta = os.path.join(os.getcwd(), "capturas")
+    try:
+        import rutas
+        carpeta = str(rutas.CAPTURAS)
+    except ImportError:
+        carpeta = os.path.join(os.getcwd(), "datos", "capturas")
     os.makedirs(carpeta, exist_ok=True)
     nombre = datetime.now().strftime("captura_%Y%m%d_%H%M%S.png")
     ruta = os.path.join(carpeta, nombre)

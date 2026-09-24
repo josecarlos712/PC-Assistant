@@ -1,13 +1,18 @@
 import subprocess
 import os
 
+
+def _nircmd() -> str:
+    try:
+        import rutas
+        return str(rutas.NIRCMD)
+    except ImportError:
+        return os.path.join(os.getcwd(), "nircmd.exe")
+
+
 def ejecutar(match):
     try:
-        # Localizamos el ejecutable nircmd en la raíz del proyecto
-        ruta_nircmd = os.path.join(os.getcwd(), "nircmd.exe")
-        
-        # 'mutesysvolume 0' fuerza a Windows a desactivar el estado de silencio (Mute Off)
-        subprocess.run([ruta_nircmd, "mutesysvolume", "0"], check=True)
+        subprocess.run([_nircmd(), "mutesysvolume", "0"], check=True)
         return "Sonido activado."
-    except Exception as e:
-        return "No pude activar el sonido del sistema."
+    except Exception:
+        return "No se pudo activar el sonido del sistema."

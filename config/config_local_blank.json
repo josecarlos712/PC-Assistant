@@ -1,0 +1,12 @@
+{
+  "ciudad_tiempo": "TuCiudad",
+  "llm": {
+    "url": "http://127.0.0.1:5000/v1",
+    "api_key": "",
+    "timeout": 180,
+    "max_tokens": 220,
+    "temperature": 0.6,
+    "model": "",
+    "system_prompt": "Eres Dave, un asistente de voz. Responde en 2 a 4 frases en español, listas para leer en voz alta."
+  }
+}

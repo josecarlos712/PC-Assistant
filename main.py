@@ -1,10 +1,20 @@
+"""
+Punto de entrada del asistente de voz.
+La raíz del repo se mantiene limpia: el motor vive en nucleo/, los comandos en comandos/.
+"""
 import ctypes
 import os
 import subprocess
 import sys
 
-import orquestador
-import escuchador
+# Resolver imports de nucleo/ y comandos/ aunque se lance desde la raíz
+_RAIZ = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(_RAIZ, "nucleo"))
+sys.path.insert(0, os.path.join(_RAIZ, "comandos"))
+
+import rutas  # noqa: E402
+import orquestador  # noqa: E402
+import escuchador  # noqa: E402
 
 # True  → consola visible con logs (desarrollo)
 # False → sin ventana; hay que cerrarlo desde el Administrador de tareas
@@ -67,16 +77,16 @@ def _tts_conversacion(texto: str) -> bool:
 
     print(f"\n[Asistente]: {texto}")
     try:
-        with open("input_tts.txt", "w", encoding="utf-8") as f:
+        rutas.DATOS.mkdir(parents=True, exist_ok=True)
+        with open(rutas.INPUT_TTS, "w", encoding="utf-8") as f:
             f.write(texto)
     except Exception as e:
         print(f"[TTS] No se pudo escribir input_tts.txt: {e}")
         return False
 
-    base = os.path.dirname(os.path.abspath(__file__))
     proc = subprocess.Popen(
-        [sys.executable, os.path.join(base, "read_file.py")],
-        cwd=base,
+        [sys.executable, str(rutas.READ_FILE)],
+        cwd=str(rutas.RAIZ),
     )
     print('[Conversación] Escuchando barge-in («para» / «calla»)…')
 
@@ -134,7 +144,6 @@ def _turno_conversacion() -> None:
         return
 
     if conversacion.es_orden_callar(texto):
-        # Nada que callar; seguir escuchando
         print("[Conversación] No estoy hablando; sigo escuchando.")
         return
 
@@ -146,7 +155,6 @@ def _turno_conversacion() -> None:
 
 def bucle_principal():
     escuchador.VERVOSE = VERVOSE
-    sys.path.append(os.path.join(os.path.dirname(__file__), "comandos"))
     import conversacion
 
     print("=== ASISTENTE VIRTUAL INICIADO (Modo Voz) ===")
@@ -181,6 +189,7 @@ def bucle_principal():
 
 
 if __name__ == "__main__":
+    os.chdir(rutas.RAIZ)
     configurar_visibilidad_consola()
     try:
         bucle_principal()

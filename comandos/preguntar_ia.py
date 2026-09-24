@@ -12,7 +12,11 @@ import traceback
 import urllib.error
 import urllib.request
 
-CONFIG_LOCAL = os.path.join(os.getcwd(), "config_local.json")
+try:
+    import rutas
+    CONFIG_LOCAL = str(rutas.CONFIG_LOCAL)
+except ImportError:
+    CONFIG_LOCAL = os.path.join(os.getcwd(), "config", "config_local.json")
 
 LLM_URL_DEFAULT = "http://127.0.0.1:5000/v1"
 LLM_TIMEOUT_DEFAULT = 180

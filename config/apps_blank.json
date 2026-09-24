@@ -1,0 +1,42 @@
+{
+  "chrome": {
+    "ruta": "chrome",
+    "alias": ["crom", "cromo", "google chrome", "navegador chrome"]
+  },
+  "firefox": {
+    "ruta": "firefox",
+    "alias": ["fire fox", "faiarfox", "navegador firefox"]
+  },
+  "edge": {
+    "ruta": "msedge",
+    "alias": ["edch", "microsoft edge", "el edge"]
+  },
+  "spotify": {
+    "ruta": "spotify",
+    "alias": ["spoti", "spoty", "espotifai", "spotifai"]
+  },
+  "calculadora": {
+    "ruta": "calc.exe",
+    "alias": ["calcu", "calc", "la calculadora"]
+  },
+  "explorador": {
+    "ruta": "explorer.exe",
+    "alias": ["explorer", "el explorador", "archivos"]
+  },
+  "paint": {
+    "ruta": "mspaint.exe",
+    "alias": ["el paint", "pintura"]
+  },
+  "terminal": {
+    "ruta": "wt.exe",
+    "alias": ["windows terminal", "la terminal", "consola"]
+  },
+  "cmd": {
+    "ruta": "cmd.exe",
+    "alias": ["prompt", "simbolo del sistema"]
+  },
+  "mi_app": {
+    "ruta": "C:\\Ruta\\Completa\\A\\TuApp.exe",
+    "alias": ["alias fonetico 1", "alias fonetico 2"]
+  }
+}

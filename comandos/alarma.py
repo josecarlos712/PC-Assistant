@@ -10,7 +10,11 @@ import uuid
 
 MENSAJE_ALARMA_DEFAULT = "Alarma. Es la hora."
 TIMEOUT_MAX_SEGUNDOS = 99999
-CARPETA_ALARMAS = "alarmas"
+
+try:
+    import rutas
+except ImportError:
+    rutas = None
 
 NUMEROS = {
     "cero": 0,
@@ -198,9 +202,12 @@ def _parsear_tiempo(texto: str):
 
 
 def _generar_wav_alarma(ruta_wav: str, texto: str) -> bool:
-    base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-    modelo = os.path.join(base, "voices", "Dave", "es_ES-davefx-medium.onnx")
+    if rutas is not None:
+        base = str(rutas.RAIZ)
+        modelo = str(rutas.MODELO_PIPER)
+    else:
+        base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        modelo = os.path.join(base, "voices", "Dave", "es_ES-davefx-medium.onnx")
     if not os.path.isfile(modelo):
         print(f"[Alarma] No se encuentra el modelo Piper: {modelo}")
         return False
@@ -257,14 +264,16 @@ def _lanzar_timeout(segundos: int, ruta_wav: str, alarm_id: str = ""):
     Usa el mismo intérprete Python (no cmd timeout): así el audio puede abrir
     el dispositivo predeterminado de Windows sin consola interactiva.
     """
-    base = os.getcwd()
-    alarm_sound = os.path.join(base, "alarm_sound.py")
+    if rutas is not None:
+        base = str(rutas.RAIZ)
+        alarm_sound = str(rutas.ALARM_SOUND)
+    else:
+        base = os.getcwd()
+        alarm_sound = os.path.join(base, "nucleo", "alarm_sound.py")
     python = sys.executable
 
     flags = 0
     if os.name == "nt":
-        # Sin ventana: winsound usa el dispositivo predeterminado del sistema
-        # y no necesita consola (a diferencia de pygame en proceso detached).
         flags = getattr(subprocess, "CREATE_NO_WINDOW", 0x08000000)
 
     try:
@@ -312,8 +321,12 @@ def ejecutar(match):
         )
 
     mensaje_wav = _mensaje_voz_alarma(titulo)
-    base = os.getcwd()
-    carpeta = os.path.join(base, CARPETA_ALARMAS)
+    if rutas is not None:
+        carpeta = str(rutas.ALARMAS)
+        base = str(rutas.RAIZ)
+    else:
+        base = os.getcwd()
+        carpeta = os.path.join(base, "datos", "alarmas")
     os.makedirs(carpeta, exist_ok=True)
     nombre = datetime.now().strftime("alarma_%Y%m%d_%H%M%S.wav")
     ruta_wav = os.path.join(carpeta, nombre)

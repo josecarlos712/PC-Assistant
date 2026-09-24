@@ -60,7 +60,8 @@ _PROMPT_WHISPER = (
     "Dave. Escucha. Activa modo dia. Activa modo noche. Modo dia. Modo noche. "
     "Pasa a modo dia. Abre el bloc de notas. Dime la hora. "
     "Busca en google. Haz una captura. Abre chrome. Abre spotify. "
-    "Cancela el apagado. Reinicia el ordenador. Anota comprar leche. "
+    "Cancela el apagado. Cancela la ultima alarma. Cancela la alarma mas proxima. "
+    "Reinicia el ordenador. Anota comprar leche. "
     "Pregunta a la ia. Pregunta al modelo. "
     "Inicia una conversacion. Fin de la conversacion."
 )
@@ -82,7 +83,9 @@ def _alias_apps_foneticos() -> dict:
     Carga alias de apps.json para corregir nombres mal oídos
     (ej. 'cromo' → 'chrome', 'espotifai' → 'spotify').
     """
-    ruta = os.path.join(os.path.dirname(os.path.abspath(__file__)), "apps.json")
+    import rutas
+
+    ruta = str(rutas.APPS_JSON)
     correcciones = {}
     try:
         with open(ruta, "r", encoding="utf-8") as f:
@@ -252,6 +255,17 @@ def limpiar_fonetica_windows(texto: str) -> str:
         "model": "modo",
         "anade": "añade",
         "anado": "añade",
+        # --- Alarmas ---
+        "cancela la ultima alarma": "cancela la última alarma",
+        "cancelar la ultima alarma": "cancela la última alarma",
+        "anula la ultima alarma": "anula la última alarma",
+        "quita la ultima alarma": "quita la última alarma",
+        "borra la ultima alarma": "borra la última alarma",
+        "cancela la alarma mas proxima": "cancela la alarma más próxima",
+        "cancela la alarma mas cercana": "cancela la alarma más cercana",
+        "cancela la proxima alarma": "cancela la próxima alarma",
+        "anula la alarma mas proxima": "anula la alarma más próxima",
+        "quita la alarma mas proxima": "quita la alarma más próxima",
         # --- Apagado / reinicio ---
         "cancela el apagado": "cancela el apagado",
         "cancelar el apagado": "cancela el apagado",

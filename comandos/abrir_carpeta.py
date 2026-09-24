@@ -3,7 +3,14 @@ import json
 import os
 import unicodedata
 
-RUTA_MAPEO = os.path.join(os.getcwd(), "carpetas.json")
+RUTA_MAPEO = None
+
+try:
+    import rutas
+    RUTA_MAPEO = str(rutas.CARPETAS_JSON)
+except ImportError:
+    import os
+    RUTA_MAPEO = os.path.join(os.getcwd(), "config", "carpetas.json")
 
 
 def _sin_acentos(texto: str) -> str:

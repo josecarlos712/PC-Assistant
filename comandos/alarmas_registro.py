@@ -1,10 +1,15 @@
 """Registro persistente de alarmas programadas (para consultarlas por voz)."""
 import json
 import os
+import subprocess
 import uuid
 from datetime import datetime
 
-RUTA_REGISTRO = os.path.join(os.getcwd(), "alarmas", "registro.json")
+try:
+    import rutas
+    RUTA_REGISTRO = str(rutas.ALARMAS / "registro.json")
+except ImportError:
+    RUTA_REGISTRO = os.path.join(os.getcwd(), "datos", "alarmas", "registro.json")
 
 
 def _cargar() -> list:
@@ -110,3 +115,61 @@ def listar_pendientes() -> list:
     _guardar(restantes)
     vivas.sort(key=lambda x: x.get("dispara_en", ""))
     return vivas
+
+
+def ultima_anadida():
+    """La alarma pendiente creada más recientemente, o None."""
+    pendientes = listar_pendientes()
+    if not pendientes:
+        return None
+    return max(pendientes, key=lambda e: e.get("creada") or "")
+
+
+def mas_proxima():
+    """La alarma pendiente que dispara antes, o None."""
+    pendientes = listar_pendientes()
+    if not pendientes:
+        return None
+    return pendientes[0]
+
+
+def _matar_proceso(pid) -> bool:
+    """Intenta terminar el proceso (y su árbol en Windows). True si ya no vive."""
+    if not pid:
+        return True
+    try:
+        pid = int(pid)
+    except (TypeError, ValueError):
+        return True
+    if not _proceso_vivo(pid):
+        return True
+    try:
+        if os.name == "nt":
+            subprocess.run(
+                ["taskkill", "/PID", str(pid), "/T", "/F"],
+                capture_output=True,
+                check=False,
+            )
+        else:
+            os.kill(pid, 15)
+    except Exception as e:
+        print(f"[Alarma] No se pudo matar pid={pid}: {e}")
+    return not _proceso_vivo(pid)
+
+
+def cancelar(entrada: dict) -> bool:
+    """Mata el proceso, quita el registro y borra el WAV. True si quedó cancelada."""
+    if not entrada:
+        return False
+    pid = entrada.get("pid")
+    if not _matar_proceso(pid):
+        return False
+    quitar(alarm_id=entrada.get("id"), ruta_wav=entrada.get("wav"))
+    wav = entrada.get("wav")
+    if wav:
+        try:
+            if os.path.isfile(wav):
+                os.remove(wav)
+        except OSError:
+            pass
+    return True

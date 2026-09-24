@@ -1,15 +1,12 @@
-"""Guarda una nota rápida en notas/ y la copia al portapapeles."""
+"""Guarda una nota rápida en datos/notas/ y la copia al portapapeles."""
 import os
 import subprocess
 from datetime import datetime
-
-CARPETA_NOTAS = "notas"
 
 
 def _copiar_portapapeles(texto: str) -> bool:
     """Copia texto Unicode al portapapeles de Windows."""
     try:
-        # Set-Clipboard maneja bien Unicode y saltos de línea
         completado = subprocess.run(
             [
                 "powershell",
@@ -41,8 +38,11 @@ def ejecutar(match):
     if not contenido:
         return "Dime qué quieres anotar."
 
-    base = os.getcwd()
-    carpeta = os.path.join(base, CARPETA_NOTAS)
+    try:
+        import rutas
+        carpeta = str(rutas.NOTAS)
+    except ImportError:
+        carpeta = os.path.join(os.getcwd(), "datos", "notas")
     os.makedirs(carpeta, exist_ok=True)
 
     ahora = datetime.now()

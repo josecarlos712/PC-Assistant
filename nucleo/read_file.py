@@ -10,25 +10,20 @@ import hashlib
 import json
 import shutil
 
+import rutas
+
 # ==========================================
 # CONFIGURACIÓN GENERAL Y RUTAS GLOBALES
 # ==========================================
-ARCHIVO_ENTRADA = "input_tts.txt"
-MODELO_PIPER = "voices/Dave/es_ES-davefx-medium.onnx"
-CARPETA_SALIDA = "output_tts"
-CARPETA_CACHE = "cache_tts"
-ARCHIVO_REGISTRO = "cache_registro.json"
-
 UMBRAL_POPULARIDAD = 3  # Veces que debe repetirse una frase para pasar a caché permanente
 HOLGURA_JSON = 50       # Margen dinámico de frases nuevas en el JSON
 
-# Inicialización de rutas absolutas globales
-DIRECTORIO_BASE = os.path.dirname(os.path.abspath(__file__))
-RUTA_ENTRADA_ABSOLUTA = os.path.join(DIRECTORIO_BASE, ARCHIVO_ENTRADA)
-RUTA_SALIDA_ABSOLUTA = os.path.join(DIRECTORIO_BASE, CARPETA_SALIDA)
-RUTA_MODELO_ABSOLUTA = os.path.join(DIRECTORIO_BASE, MODELO_PIPER)
-RUTA_CARPETA_CACHE = os.path.join(DIRECTORIO_BASE, CARPETA_CACHE)
-RUTA_JSON_REGISTRO = os.path.join(DIRECTORIO_BASE, ARCHIVO_REGISTRO)
+DIRECTORIO_BASE = str(rutas.RAIZ)
+RUTA_ENTRADA_ABSOLUTA = str(rutas.INPUT_TTS)
+RUTA_SALIDA_ABSOLUTA = str(rutas.OUTPUT_TTS)
+RUTA_MODELO_ABSOLUTA = str(rutas.MODELO_PIPER)
+RUTA_CARPETA_CACHE = str(rutas.CACHE_TTS)
+RUTA_JSON_REGISTRO = str(rutas.CACHE_REGISTRO)
 
 # Inicializar el mezclador de audio de pygame y la cola de hilos
 pygame.mixer.init()
@@ -203,7 +198,7 @@ def procesar_y_generar_tts():
     frases = re.split(r'(?<=\.)\s+', texto_normalizado)
     contador = 1
     
-    ruta_temporal = os.path.join(DIRECTORIO_BASE, "temp_frase.txt")
+    ruta_temporal = str(rutas.DATOS / "temp_frase.txt")
     
     for frase in frases:
         frase_limpia = frase.strip()

@@ -1,14 +1,25 @@
+# Entorno y caché de Python
 venv/
 __pycache__/
 *.pyc
 .idea/
-config_local.json
-cache_tts/
-cache_registro.json
-output_tts/
-capturas/
-alarmas/
-input_tts.txt
+
+# Configuración personal del usuario (usa config/*_blank.json como plantilla)
+config/config_local.json
+config/apps.json
+config/carpetas.json
+config/cache_registro.json
+
+# Contenido generado en ejecución (no subir a git)
+datos/alarmas/
+datos/cache_tts/
+datos/capturas/
+datos/notas/
+datos/output_tts/
+datos/input_tts.txt
+datos/temp_frase.txt
+
+# Temporales / audio / modelos grandes
 temp_frase.txt
 *.wav
 *.onnx

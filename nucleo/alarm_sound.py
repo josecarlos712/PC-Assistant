@@ -10,12 +10,14 @@ import os
 import sys
 import time
 
+import rutas
+
 REPETICIONES = 3
 PAUSA_ENTRE_REPETICIONES = 0.45  # segundos entre cada "Alarma. Es la hora."
 
 
 def _quitar_del_registro(alarm_id: str = None, ruta_wav: str = None) -> None:
-    ruta = os.path.join(os.getcwd(), "alarmas", "registro.json")
+    ruta = str(rutas.ALARMAS / "registro.json")
     try:
         if not os.path.isfile(ruta):
             return

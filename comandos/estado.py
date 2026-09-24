@@ -56,7 +56,11 @@ def _sin_acentos(texto: str) -> str:
 
 
 def _ciudad_configurada() -> str:
-    ruta = os.path.join(os.getcwd(), "config_local.json")
+    try:
+        import rutas
+        ruta = str(rutas.CONFIG_LOCAL)
+    except ImportError:
+        ruta = os.path.join(os.getcwd(), "config", "config_local.json")
     try:
         with open(ruta, "r", encoding="utf-8") as f:
             datos = json.load(f)

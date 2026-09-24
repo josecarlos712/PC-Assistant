@@ -13,7 +13,14 @@ import subprocess
 import unicodedata
 from difflib import SequenceMatcher
 
-RUTA_MAPEO = os.path.join(os.getcwd(), "apps.json")
+RUTA_MAPEO = None  # se resuelve al importar rutas
+
+try:
+    import rutas
+    RUTA_MAPEO = str(rutas.APPS_JSON)
+except ImportError:
+    import os
+    RUTA_MAPEO = os.path.join(os.getcwd(), "config", "apps.json")
 UMBRAL_DIFUSO = 0.72
 
 

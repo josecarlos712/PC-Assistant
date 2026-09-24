@@ -82,11 +82,14 @@ def _parsear_plazo(texto: str):
 
 def _decir(texto: str) -> None:
     try:
-        with open("input_tts.txt", "w", encoding="utf-8") as f:
+        import rutas
+        rutas.DATOS.mkdir(parents=True, exist_ok=True)
+        with open(rutas.INPUT_TTS, "w", encoding="utf-8") as f:
             f.write(texto)
         subprocess.run(
-            [sys.executable, os.path.join(os.getcwd(), "read_file.py")],
+            [sys.executable, str(rutas.READ_FILE)],
             check=False,
+            cwd=str(rutas.RAIZ),
         )
     except Exception:
         pass

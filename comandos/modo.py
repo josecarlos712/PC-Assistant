@@ -74,7 +74,11 @@ def _proyeccion_extender() -> bool:
 
 
 def _ruta_nircmd() -> str:
-    return os.path.join(os.getcwd(), "nircmd.exe")
+    try:
+        import rutas
+        return str(rutas.NIRCMD)
+    except ImportError:
+        return os.path.join(os.getcwd(), "nircmd.exe")
 
 
 def _monitores_off() -> bool:
@@ -174,11 +178,14 @@ def _iniciar_text_generation_webui() -> bool:
 
 def _decir(texto: str) -> None:
     try:
-        with open("input_tts.txt", "w", encoding="utf-8") as f:
+        import rutas
+        rutas.DATOS.mkdir(parents=True, exist_ok=True)
+        with open(rutas.INPUT_TTS, "w", encoding="utf-8") as f:
             f.write(texto)
         subprocess.run(
-            [sys.executable, os.path.join(os.getcwd(), "read_file.py")],
+            [sys.executable, str(rutas.READ_FILE)],
             check=False,
+            cwd=str(rutas.RAIZ),
         )
     except Exception:
         pass

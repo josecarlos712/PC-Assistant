@@ -1,0 +1,9 @@
+{
+  "descargas": "%USERPROFILE%\\Downloads",
+  "documentos": "%USERPROFILE%\\Documents",
+  "escritorio": "%USERPROFILE%\\Desktop",
+  "musica": "%USERPROFILE%\\Music",
+  "videos": "%USERPROFILE%\\Videos",
+  "appdata": "%APPDATA%",
+  "mi_carpeta": "D:\\Ruta\\A\\TuCarpeta"
+}

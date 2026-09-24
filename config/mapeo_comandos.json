@@ -20,6 +20,9 @@
   "volumen_desmutear": [
     "^(desmutear|activa el sonido|pon sonido|quita el silencio)$"
   ],
+  "cancelar_alarma": [
+    "^(?:cancela(?:r)?|anula(?:r)?|quita(?:r)?|borra(?:r)?).+alarm[ae]s?.*$"
+  ],
   "alarma": [
     "^(?:pon(?:e|me|er)?(?: (?:una?|la))? alarm[ae]?|crea(?:r)?(?: (?:una?|la))? alarm[ae]?|programa(?:r)?(?: (?:una?|la))? alarm[ae]?|a[nñ]ade(?:r)?(?: (?:una?|la))? alarm[ae]?|alarm[ae]?)(?:\\s+(.+))?$"
   ],

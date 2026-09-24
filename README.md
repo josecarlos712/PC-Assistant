@@ -10,9 +10,9 @@ No es el software [Home Assistant](https://www.home-assistant.io/); es un asiste
 Micrófono → escuchador (Whisper) → orquestador (regex) → comandos/*.py → Piper TTS → altavoces
 ```
 
-1. **STT** (`escuchador.py`): calibra el ruido ambiente, espera la palabra de activación (**Dave**, **escucha**, **oye**, etc.), captura el comando y transcribe con [faster-whisper](https://github.com/SYSTRAN/faster-whisper) (`small`, CPU, `int8`, idioma `es`). Corrige errores fonéticos habituales y conserva tildes/ñ en el comando tras la activación.
-2. **Orquestador** (`orquestador.py`): compara la frase con patrones de `mapeo_comandos.json` y carga el script de `comandos/` que corresponda. Si no hay coincidencia, **ignora en silencio** (sin TTS).
-3. **TTS** (`read_file.py`): sintetiza la respuesta con [Piper](https://github.com/rhasspy/piper) invocando `python -m piper` (voz Dave, `es_ES-davefx-medium`) y la reproduce con pygame. Antes de sintetizar **normaliza símbolos** (°C, %, €…) y **quita las tildes** (conserva la ñ). Las frases repetidas se guardan en caché permanente.
+1. **STT** (`nucleo/escuchador.py`): calibra el ruido ambiente, espera la palabra de activación (**Dave**, **escucha**, **oye**, etc.), captura el comando y transcribe con [faster-whisper](https://github.com/SYSTRAN/faster-whisper) (`small`, CPU, `int8`, idioma `es`). Corrige errores fonéticos habituales y conserva tildes/ñ en el comando tras la activación.
+2. **Orquestador** (`nucleo/orquestador.py`): compara la frase con patrones de `config/mapeo_comandos.json` y carga el script de `comandos/` que corresponda. Si no hay coincidencia, **ignora en silencio** (sin TTS).
+3. **TTS** (`nucleo/read_file.py`): sintetiza la respuesta con [Piper](https://github.com/rhasspy/piper) invocando `python -m piper` (voz Dave, `es_ES-davefx-medium`) y la reproduce con pygame. Antes de sintetizar **normaliza símbolos** (°C, %, €…) y **quita las tildes** (conserva la ñ). Las frases repetidas se guardan en caché permanente.
 
 ## Requisitos
 
@@ -41,7 +41,7 @@ voices/Dave/es_ES-davefx-medium.onnx.json
 
 Modelo oficial: [rhasspy/piper-voices — es_ES davefx medium](https://huggingface.co/rhasspy/piper-voices/blob/main/es/es_ES/davefx/medium/es_ES-davefx-medium.onnx).
 
-Opcional — `config_local.json` (no se sube a git):
+Opcional — `config/config_local.json` (cópialo desde `config/config_local_blank.json`; no se sube a git):
 
 ```json
 {
@@ -60,7 +60,7 @@ Opcional — `config_local.json` (no se sube a git):
 
 La URL del log de oobabooga (`0.0.0.0:5000`) es la dirección de escucha; desde Dave usa siempre `127.0.0.1:5000`.
 
-Edita `carpetas.json` y `apps.json` con las rutas de **tu** PC (ahora apuntan a rutas locales de ejemplo).
+Edita `config/carpetas.json` y `config/apps.json` con las rutas de **tu** PC (partiendo de las plantillas `*_blank.json`).
 
 ## Uso
 
@@ -85,7 +85,7 @@ Al arrancar, quédate en silencio un segundo y medio (calibra el ruido). Luego a
 **Modo consola** (texto, útil para probar comandos sin STT):
 
 ```powershell
-python main_console.py
+python nucleo\main_console.py
 ```
 
 Para salir del modo consola escribe `salir`, `exit` o `apagar`. En modo voz usa `Ctrl+C`.
@@ -108,8 +108,8 @@ shell:startup
 Pruebas aisladas:
 
 ```powershell
-python escuchador.py          # solo transcripción
-python read_file.py           # lee input_tts.txt y lo dice en voz alta
+python nucleo\escuchador.py          # solo transcripción
+python nucleo\read_file.py           # lee datos\input_tts.txt y lo dice en voz alta
 ```
 
 ## Comandos actuales
@@ -124,6 +124,7 @@ python read_file.py           # lee input_tts.txt y lo dice en voz alta
 | Silencio | *silencio*, *mutear* | `comandos/volumen_mutear.py` |
 | Quitar silencio | *desmutear*, *activa el sonido* | `comandos/volumen_desmutear.py` |
 | Alarma | *pon una alarma en 5 minutos*, *añade una alarma en 10 minutos para sacar las papas* | `comandos/alarma.py` |
+| Cancelar alarma | *cancela la última alarma*, *cancela la alarma más próxima* | `comandos/cancelar_alarma.py` |
 | Buscar en Google | *busca en google recetas de pollo* | `comandos/buscar_google.py` |
 | Preguntar a la IA local | *pregunta a la ia qué es la fotosíntesis*, *ia cuéntame un chiste*, *olvida la conversación* | `comandos/preguntar_ia.py` |
 | Conversación continua | *inicia una conversación* → habla sin Dave → *fin de la conversación* | `comandos/conversacion.py` |
@@ -143,7 +144,8 @@ python read_file.py           # lee input_tts.txt y lo dice en voz alta
 - Plazos: *en N segundos/minutos/horas*, *a las 8:30*, *en media hora*, etc.
 - Título opcional tras *para* / *llamada*: *alarma en un minuto para sacar el pollo*.
 - Se genera un WAV con Piper, Windows espera en segundo plano (`timeout` + `alarm_sound.py`) y el sonido se reproduce 3 veces (`winsound`).
-- Quedan registradas en `alarmas/registro.json` para poder consultarlas con **estado alarmas**.
+- Quedan registradas en `datos/alarmas/registro.json` para poder consultarlas con **estado alarmas**.
+- Cancelar: *cancela la última alarma* (la que acabas de poner); *cancela la alarma más próxima* (la que suena antes). Sin matiz, *cancela la alarma* anula la última.
 
 ### Modos día y noche
 
@@ -162,7 +164,7 @@ python read_file.py           # lee input_tts.txt y lo dice en voz alta
 
 > La luz RGB del teclado (p. ej. Yunzii QL108 con Fn+Backspace) **no** se puede apagar por software: Fn la gestiona el firmware.
 
-### Carpetas (`carpetas.json`)
+### Carpetas (`config/carpetas.json`)
 
 Palabra clave → ruta. Ejemplos actuales: `peliculas`, `musica`, `programas`, `proyecto`, `appdata` / `a pe pe data`.
 
@@ -170,7 +172,7 @@ Palabra clave → ruta. Ejemplos actuales: `peliculas`, `musica`, `programas`, `
 "descargas": "D:\\Descargas"
 ```
 
-### Aplicaciones (`apps.json`)
+### Aplicaciones (`config/apps.json`)
 
 Para abrir programas por voz sin pelearte con Whisper. Cada entrada tiene:
 
@@ -203,7 +205,7 @@ El escuchador aplica esos alias al transcribir; `abrir_app` además hace coincid
 | Tiempo | *estado tiempo*, *qué tiempo hace*, *dime el tiempo* |
 | Alarmas | *estado alarmas*, *qué alarmas hay*, *dime las alarmas* |
 
-Ciudad del clima: `ciudad_tiempo` en `config_local.json` (si falta, usa el valor por defecto de `comandos/estado.py`).
+Ciudad del clima: `ciudad_tiempo` en `config/config_local.json` (si falta, usa el valor por defecto de `comandos/estado.py`).
 
 ### IA local (text-generation-webui)
 
@@ -213,7 +215,7 @@ Requiere oobabooga con API OpenAI activa (`--api`, puerto 5000). Frases:
 - *olvida la conversación* (borra el historial de la sesión con el modelo)
 - **Conversación continua:** *inicia una conversación* → a partir de ahí no hace falta decir Dave; cada frase va a la IA y Dave lee la respuesta → *para* / *calla* / *silencio* / *basta* (o *Dave, para*) corta la respuesta al instante → *fin de la conversación* para volver al modo normal
 
-La respuesta se limpia de markdown/razonamiento y se acorta para Piper. Ajustes en `config_local.json` → `llm`.
+La respuesta se limpia de markdown/razonamiento y se acorta para Piper. Ajustes en `config/config_local.json` → `llm`.
 
 ## Añadir un comando
 
@@ -226,7 +228,7 @@ def ejecutar(match):
 
 `match` es el objeto de `re.match` sobre la frase del usuario.
 
-2. Añade la clave en `mapeo_comandos.json`. El nombre de la clave debe coincidir con el archivo (sin `.py`):
+2. Añade la clave en `config/mapeo_comandos.json`. El nombre de la clave debe coincidir con el archivo (sin `.py`):
 
 ```json
 "mi_comando": [
@@ -238,50 +240,50 @@ Los patrones se evalúan en minúsculas, de arriba abajo; gana la primera coinci
 
 Para **modos** o **estados** nuevos, registra la función en el diccionario de `comandos/modo.py` o `comandos/estado.py`.
 
+Código nuevo del motor (STT/TTS/orquestación) → `nucleo/`. Configuración → `config/`. Artefactos de ejecución → `datos/`. Modelos de voz → `voices/`.
+
 ## Estructura
 
 ```
 .
-├── main.py                 # Bucle principal (voz); flags DEV / VERVOSE
-├── main_console.py         # Bucle principal (teclado)
+├── main.py                 # Entrada (voz); flags DEV / VERVOSE
 ├── iniciar_asistente.bat   # Arranque con venv
-├── escuchador.py           # Captura de micrófono y transcripción
-├── orquestador.py          # Enrutado de comandos
-├── read_file.py            # Síntesis y reproducción TTS + caché + quitar tildes
-├── alarm_sound.py          # Espera y reproduce WAV de alarma
-├── mapeo_comandos.json     # Frases → scripts
-├── carpetas.json           # Palabras clave → rutas de carpetas
-├── apps.json               # Apps + alias fonéticos para Whisper
-├── config_local.json       # Ajustes locales (gitignored): ciudad_tiempo, llm
+├── setup.bat               # Instalador para usuarios no técnicos
+├── environment.bat
 ├── requirements.txt
-├── LICENSE                 # GPL-3.0
-├── nircmd.exe              # Utilidad Windows (incluida en el repo)
-├── input_tts.txt           # Texto que Piper debe leer (gitignored)
-├── cache_registro.json     # Índice de frases cacheadas (gitignored)
-├── alarmas/                # WAV y registro.json de alarmas pendientes
-├── capturas/               # Capturas de pantalla
-├── notas/                  # Notas rápidas por voz
-├── comandos/               # Un script por comando
-│   ├── alarma.py
-│   ├── alarmas_registro.py
-│   ├── abrir_carpeta.py
-│   ├── abrir_app.py
-│   ├── cancelar_apagado.py
-│   ├── reiniciar_pc.py
-│   ├── nota.py
-│   ├── estado.py
-│   ├── modo.py
-│   └── ...
-├── voices/Dave/            # JSON de Piper en git; el .onnx hay que descargarlo
-├── cache_tts/              # WAV permanentes (frases frecuentes)
-└── output_tts/             # WAV temporales de reproducción
+├── LICENSE
+├── nircmd.exe
+├── nucleo/                 # Motor del asistente
+│   ├── rutas.py            # Rutas absolutas del proyecto
+│   ├── escuchador.py
+│   ├── orquestador.py
+│   ├── read_file.py
+│   ├── alarm_sound.py
+│   ├── main_console.py
+│   ├── strip_pipe.py
+│   └── desbloquear_pin.py
+├── comandos/               # Un script por comando de voz
+├── config/                 # JSON de config + plantillas *_blank.json
+│   ├── mapeo_comandos.json
+│   ├── apps_blank.json → apps.json
+│   ├── carpetas_blank.json → carpetas.json
+│   ├── config_local_blank.json → config_local.json
+│   └── cache_registro_blank.json → cache_registro.json
+├── datos/                  # Generado en ejecución (gitignored)
+│   ├── alarmas/
+│   ├── capturas/
+│   ├── notas/
+│   ├── cache_tts/
+│   ├── output_tts/
+│   └── input_tts.txt
+└── voices/Dave/            # Modelo Piper (.json en git; .onnx a descargar)
 ```
 
-`desbloquear_pin.py` es solo una nota de investigación: Windows no deja escribir el PIN en la pantalla de bloqueo desde un script de usuario.
+`nucleo/desbloquear_pin.py` es solo una nota de investigación: Windows no deja escribir el PIN en la pantalla de bloqueo desde un script de usuario.
 
 ## Palabra de activación y micrófono
 
-En `escuchador.py`:
+En `nucleo/escuchador.py`:
 
 - `NOMBRE_ASISTENTE` y `PALABRAS_ACTIVACION`: cómo se le llama. Por defecto **Dave**, **escucha**, **oye**, **hola Dave**, **hey Dave** y variantes fonéticas (*deiv*, *deive*).
 - El umbral de voz se **calibra al iniciar** (~1,5 s).
@@ -293,7 +295,7 @@ Si transcribe ruido de fondo, sube un poco el factor del umbral en `Microfono.ca
 
 ## Caché de voz
 
-Cada frase se identifica por MD5 (sobre el texto ya normalizado, sin tildes). Tras **3** repeticiones se copia a `cache_tts/` y se reutiliza sin volver a llamar a Piper. El registro (`cache_registro.json`) se recorta cuando crece demasiado: se conservan las frases permanentes más un margen de 50 temporales.
+Cada frase se identifica por MD5 (sobre el texto ya normalizado, sin tildes). Tras **3** repeticiones se copia a `datos/cache_tts/` y se reutiliza sin volver a llamar a Piper. El registro (`config/cache_registro.json`) se recorta cuando crece demasiado: se conservan las frases permanentes más un margen de 50 temporales.
 
 ## Limitaciones
 
@@ -301,7 +303,5 @@ Cada frase se identifica por MD5 (sobre el texto ya normalizado, sin tildes). Tr
 - El reconocimiento es por expresiones regulares, no por un modelo de lenguaje: las frases deben parecerse a las del JSON.
 - La primera ejecución de Whisper descarga el modelo `small` y puede tardar.
 - Hay que descargar a mano el `.onnx` de Piper; sin él no hay voz.
-- No se puede escribir el PIN en la pantalla de bloqueo de Windows desde una app de usuario (secure desktop); el modo noche apaga monitores en su lugar.
-- Fn del teclado no es simulable; la luz RGB de teclados como el Yunzii QL108 no se controla por software con la API pública.
 - El clima necesita red; el resto del asistente funciona offline.
-- `carpetas.json`, `apps.json` y la ruta de text-generation-webui en `modo.py` son específicos de cada máquina.
+- `config/carpetas.json`, `config/apps.json` y la ruta de text-generation-webui en `modo.py` son específicos de cada máquina.
